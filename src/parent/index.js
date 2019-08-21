@@ -86,7 +86,7 @@ export class ParentComponent<P> {
 
     initPromise : ZalgoPromise<void>
     handledErrors : Array<mixed> // eslint-disable-line flowtype/no-mutable-array
-    
+
     props : PropsType<P>
     state : StateType
     child : ?ChildExportsType<P>
@@ -114,7 +114,7 @@ export class ParentComponent<P> {
 
     setupEvents(onError : ?onErrorPropType) {
         this.event = eventEmitter();
-        
+
         this.event.on(EVENT.RENDER,   () => this.props.onRender());
         this.event.on(EVENT.DISPLAY,  () => this.props.onDisplay());
         this.event.on(EVENT.RENDERED, () => this.props.onRendered());
@@ -145,7 +145,7 @@ export class ParentComponent<P> {
             const uid = `${ ZOID }-${ this.component.tag }-${ uniqueID() }`;
             const domain = this.getDomain();
             const childDomain = this.getChildDomain();
-            
+
             this.component.checkAllowRender(target, domain, container);
 
             if (target !== window) {
@@ -179,7 +179,7 @@ export class ParentComponent<P> {
                 this.proxyWin = proxyWin;
                 return this.setProxyWin(proxyWin);
             });
-            
+
             const prerender = ZalgoPromise.hash({ proxyPrerenderWin: openPrerender, state: setState }).then(({ proxyPrerenderWin }) => {
                 return this.prerender(proxyPrerenderWin, { context, uid });
             });
@@ -227,7 +227,7 @@ export class ParentComponent<P> {
 
                 throw err;
             });
-            
+
         }).catch(err => {
             return ZalgoPromise.all([
                 this.onError(err),
@@ -248,7 +248,7 @@ export class ParentComponent<P> {
 
     buildWindowName({ proxyWin, childDomain, domain, target, uid, context } : { proxyWin : ProxyWindow, childDomain : string, domain : string | RegExp, target : CrossDomainWindowType, context : $Values<typeof CONTEXT>, uid : string }) : string {
         const childPayload = this.buildChildPayload({ proxyWin, childDomain, domain, target, context, uid });
-        return `__${ ZOID }__${ this.component.name }__${ base64encode(JSON.stringify(childPayload)) }__`;
+        return `__${ ZOID }__${ this.component.name }__${ base64encode(encodeURIComponent(JSON.stringify(childPayload))) }__`;
     }
 
     getPropsRef(proxyWin : ProxyWindow, childDomain : string, domain : string | RegExp, uid : string) : PropRef {
@@ -339,7 +339,7 @@ export class ParentComponent<P> {
             if (prop && prop.sameDomain && !matchDomain(domain, getDomain(window))) {
                 continue;
             }
-            
+
             result[key] = this.props[key];
         }
 
@@ -382,7 +382,7 @@ export class ParentComponent<P> {
             }
         });
     }
-    
+
     open(proxyFrame : ?ProxyObject<HTMLIFrameElement>) : ZalgoPromise<ProxyWindow> {
         return ZalgoPromise.try(() => {
             this.component.log(`open`);
@@ -454,7 +454,7 @@ export class ParentComponent<P> {
     }
 
     getWindowRef(target : CrossDomainWindowType, domain : string, uid : string, context : $Values<typeof CONTEXT>) : WindowRef {
-        
+
         if (domain === getDomain(window)) {
             const global = getGlobal(window);
             global.windows = global.windows || {};
@@ -462,7 +462,7 @@ export class ParentComponent<P> {
             this.clean.register(() => {
                 delete global.windows[uid];
             });
-    
+
             return { type: WINDOW_REFERENCES.GLOBAL, uid };
         }
 
@@ -581,7 +581,7 @@ export class ParentComponent<P> {
             }
 
             prerenderWindow = assertSameDomain(prerenderWindow);
-    
+
             const doc = prerenderWindow.document;
             const el = this.renderTemplate(prerenderTemplate, { context, uid, doc });
 
@@ -597,7 +597,7 @@ export class ParentComponent<P> {
 
             let { width = false, height = false, element = 'body' } = this.component.autoResize || {};
             element = getElementSafe(element, doc);
-            
+
             if (element && (width || height)) {
                 onResize(element, ({ width: newWidth, height: newHeight }) => {
                     this.resize({
@@ -630,7 +630,7 @@ export class ParentComponent<P> {
 
     renderContainer(proxyContainer : ProxyObject<HTMLElement>, { proxyFrame, proxyPrerenderFrame, context, uid } :
         { context : $Values<typeof CONTEXT>, uid : string, proxyFrame : ?ProxyObject<HTMLIFrameElement>, proxyPrerenderFrame : ?ProxyObject<HTMLIFrameElement> }) : ZalgoPromise<?ProxyObject<HTMLElement>> {
-        
+
 
         return ZalgoPromise.hash({
             container:      proxyContainer.get().then(elementReady),
@@ -680,7 +680,7 @@ export class ParentComponent<P> {
         if (__POST_ROBOT__.__IE_POPUP_SUPPORT__) {
             return ZalgoPromise.try(() => {
                 return proxyWin.awaitWindow();
-                
+
             }).then(win => {
                 if (!bridge || !bridge.needsBridge({ win, domain }) || bridge.hasBridge(domain, domain)) {
                     return;

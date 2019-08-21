@@ -19,6 +19,7 @@ export function defaultContainerTemplate<P>({ uid, frame, prerenderFrame, doc, p
 
         const div = doc.createElement('div');
         div.setAttribute('id', uid);
+        div.classList.add('zoid-outlet');
         const style = doc.createElement('style');
         if (props.cspNonce) {
             style.setAttribute('nonce', props.cspNonce);
@@ -57,14 +58,14 @@ export function defaultContainerTemplate<P>({ uid, frame, prerenderFrame, doc, p
 
         prerenderFrame.classList.add(CLASS.VISIBLE);
         frame.classList.add(CLASS.INVISIBLE);
-    
+
         event.on(EVENT.RENDERED, () => {
             prerenderFrame.classList.remove(CLASS.VISIBLE);
             prerenderFrame.classList.add(CLASS.INVISIBLE);
-    
+
             frame.classList.remove(CLASS.INVISIBLE);
             frame.classList.add(CLASS.VISIBLE);
-    
+
             setTimeout(() => {
                 destroyElement(prerenderFrame);
             }, 1);
@@ -74,7 +75,7 @@ export function defaultContainerTemplate<P>({ uid, frame, prerenderFrame, doc, p
             if (typeof newWidth === 'number') {
                 div.style.width = toCSS(newWidth);
             }
-    
+
             if (typeof newHeight === 'number') {
                 div.style.height = toCSS(newHeight);
             }

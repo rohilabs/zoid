@@ -48,8 +48,6 @@
         }, __webpack_require__.p = "", __webpack_require__(__webpack_require__.s = 0);
     }([ function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
-        __webpack_require__.r(__webpack_exports__);
-        var interface_namespaceObject = {};
         function _extends() {
             return (_extends = Object.assign || function(target) {
                 for (var i = 1; i < arguments.length; i++) {
@@ -76,9 +74,7 @@
             }
             return !1;
         }
-        __webpack_require__.r(interface_namespaceObject), __webpack_require__.d(interface_namespaceObject, "WeakMap", function() {
-            return weakmap_CrossDomainSafeWeakMap;
-        });
+        __webpack_require__.r(__webpack_exports__);
         var flushPromise, dispatchedErrors = [], possiblyUnhandledPromiseHandlers = [], activeCount = 0;
         function flushActive() {
             if (!activeCount && flushPromise) {
@@ -581,11 +577,10 @@
             } catch (err) {}
             return -1;
         }
-        var objectIDs, awaitFrameLoadPromises, defineProperty = Object.defineProperty, counter = Date.now() % 1e9, weakmap_CrossDomainSafeWeakMap = function() {
+        var objectIDs, awaitFrameLoadPromises, weakmap_CrossDomainSafeWeakMap = function() {
             function CrossDomainSafeWeakMap() {
                 if (this.name = void 0, this.weakmap = void 0, this.keys = void 0, this.values = void 0, 
-                counter += 1, this.name = "__weakmap_" + (1e9 * Math.random() >>> 0) + "__" + counter, 
-                function() {
+                this.name = "__weakmap_" + (1e9 * Math.random() >>> 0) + "__", function() {
                     if ("undefined" == typeof WeakMap) return !1;
                     if (void 0 === Object.freeze) return !1;
                     try {
@@ -622,7 +617,7 @@
                 }
                 if (this.isSafeToReadWrite(key)) try {
                     var name = this.name, entry = key[name];
-                    return void (entry && entry[0] === key ? entry[1] = value : defineProperty(key, name, {
+                    return void (entry && entry[0] === key ? entry[1] = value : Object.defineProperty(key, name, {
                         value: [ key, value ],
                         writable: !0
                     }));
@@ -680,7 +675,7 @@
             }, CrossDomainSafeWeakMap;
         }();
         function base64encode(str) {
-            if ("function" == typeof btoa) return btoa(str);
+            if ("function" == typeof btoa) return btoa(unescape(encodeURIComponent(str)));
             if ("undefined" != typeof Buffer) return Buffer.from(str, "utf8").toString("base64");
             throw new Error("Can not find window.btoa or Buffer");
         }
@@ -706,9 +701,11 @@
         function memoizePromise(method) {
             var cache = {};
             function memoizedPromiseFunction() {
-                for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) args[_key2] = arguments[_key2];
+                for (var _this2 = this, _arguments = arguments, _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) args[_key2] = arguments[_key2];
                 var key = serializeArgs(args);
-                return cache.hasOwnProperty(key) ? cache[key] : (cache[key] = method.apply(this, arguments).finally(function() {
+                return cache.hasOwnProperty(key) ? cache[key] : (cache[key] = promise_ZalgoPromise.try(function() {
+                    return method.apply(_this2, _arguments);
+                }).finally(function() {
                     delete cache[key];
                 }), cache[key]);
             }
@@ -833,7 +830,7 @@
             }, [ queryString ]);
         }
         function extendQuery(originalQuery, props) {
-            return void 0 === props && (props = {}), props && Object.keys(props).length ? (void 0 === (obj = _extends({}, parseQuery(originalQuery), props)) && (obj = {}), 
+            return void 0 === props && (props = {}), props && Object.keys(props).length ? (void 0 === (obj = _extends({}, parseQuery(originalQuery), {}, props)) && (obj = {}), 
             Object.keys(obj).filter(function(key) {
                 return "string" == typeof obj[key];
             }).map(function(key) {
@@ -2077,7 +2074,7 @@
         }
         function lib_global_getGlobal(win) {
             if (void 0 === win && (win = window), !isSameDomain(win)) throw new Error("Can not get global for window on different domain");
-            return win.__zoid_9_0_27__ || (win.__zoid_9_0_27__ = {}), win.__zoid_9_0_27__;
+            return win.__zoid_9_0_28__ || (win.__zoid_9_0_28__ = {}), win.__zoid_9_0_28__;
         }
         function getProxyObject(obj) {
             return {
@@ -2181,11 +2178,11 @@
                 if (!name) throw new Error("Expected component name");
                 if (!encodedPayload) throw new Error("Expected encoded payload");
                 try {
-                    return JSON.parse(function(str) {
-                        if ("undefined" != typeof window && "function" == typeof window.atob) return window.atob(str);
+                    return JSON.parse(decodeURIComponent(function(str) {
+                        if ("undefined" != typeof window && "function" == typeof window.atob) return decodeURIComponent(escape(window.atob(str)));
                         if ("undefined" != typeof Buffer) return Buffer.from(str, "base64").toString("utf8");
                         throw new Error("Can not find window.atob or Buffer");
-                    }(encodedPayload));
+                    }(encodedPayload)));
                 } catch (err) {
                     throw new Error("Can not decode window name payload: " + encodedPayload + ": " + stringifyError(err));
                 }
@@ -2205,7 +2202,7 @@
                     _this.component = component, _this.onPropHandlers = [];
                     var childPayload = getChildPayload();
                     if (!childPayload) throw new Error("No child payload found");
-                    if ("9_0_27" !== childPayload.version) throw new Error("Parent window has zoid version " + childPayload.version + ", child window has version 9_0_27");
+                    if ("9_0_28" !== childPayload.version) throw new Error("Parent window has zoid version " + childPayload.version + ", child window has version 9_0_28");
                     var parent = childPayload.parent, parentDomain = childPayload.parentDomain, exports = childPayload.exports, props = childPayload.props;
                     _this.context = childPayload.context, _this.parentComponentWindow = _this.getParentComponentWindow(parent), 
                     _this.parentDomain = parentDomain, _this.parent = setup_deserializeMessage(_this.parentComponentWindow, parentDomain, exports), 
@@ -2552,6 +2549,8 @@
                     return _this2.props.onRendered();
                 }), this.event.on(EVENT.CLOSE, function() {
                     return _this2.props.onClose();
+                }), this.event.on(EVENT.RESIZE, function() {
+                    return _this2.props.onResize();
                 }), this.event.on(EVENT.PROPS, function(props) {
                     return _this2.props.onProps(props);
                 }), this.event.on(EVENT.ERROR, function(err) {
@@ -2674,7 +2673,7 @@
                     context: _ref6.context,
                     uid: _ref6.uid
                 });
-                return "__" + ZOID + "__" + this.component.name + "__" + base64encode(JSON.stringify(childPayload)) + "__";
+                return "__" + ZOID + "__" + this.component.name + "__" + base64encode(encodeURIComponent(JSON.stringify(childPayload))) + "__";
             }, _proto.getPropsRef = function(proxyWin, childDomain, domain, uid) {
                 var value = setup_serializeMessage(proxyWin, domain, this.getPropsForChild(domain)), propRef = childDomain === utils_getDomain() ? {
                     type: "uid",
@@ -2695,7 +2694,7 @@
                 return {
                     uid: uid,
                     context: context,
-                    version: "9_0_27",
+                    version: "9_0_28",
                     childDomain: childDomain,
                     parentDomain: utils_getDomain(window),
                     tag: this.component.tag,
@@ -2786,7 +2785,7 @@
                 }(this.component, this.props, props, helpers, isUpdate);
             }, _proto.buildUrl = function() {
                 var propsDef, props, params, keys, _this6 = this;
-                return (propsDef = _extends({}, this.component.props, this.component.builtinProps), 
+                return (propsDef = _extends({}, this.component.props, {}, this.component.builtinProps), 
                 props = this.props, params = {}, keys = Object.keys(props), promise_ZalgoPromise.all(keys.map(function(key) {
                     var prop = propsDef[key];
                     if (prop) return promise_ZalgoPromise.resolve().then(function() {
@@ -3165,7 +3164,7 @@
             var uid = _ref.uid, frame = _ref.frame, prerenderFrame = _ref.prerenderFrame, doc = _ref.doc, props = _ref.props, event = _ref.event, _ref$dimensions = _ref.dimensions, width = _ref$dimensions.width, height = _ref$dimensions.height;
             if (frame && prerenderFrame) {
                 var div = doc.createElement("div");
-                div.setAttribute("id", uid);
+                div.setAttribute("id", uid), div.classList.add("zoid-outlet");
                 var style = doc.createElement("style");
                 return props.cspNonce && style.setAttribute("nonce", props.cspNonce), style.appendChild(doc.createTextNode("\n            #" + uid + " {\n                display: inline-block;\n                position: relative;\n                width: " + width + ";\n                height: " + height + ";\n            }\n\n            #" + uid + " > iframe {\n                display: inline-block;\n                position: absolute;\n                width: 100%;\n                height: 100%;\n                top: 0;\n                left: 0;\n                transition: opacity .2s ease-in-out;\n            }\n\n            #" + uid + " > iframe." + CLASS.INVISIBLE + " {\n                opacity: 0;\n            }\n\n            #" + uid + " > iframe." + CLASS.VISIBLE + " {\n                opacity: 1;\n        }\n        ")), 
                 div.appendChild(frame), div.appendChild(prerenderFrame), div.appendChild(style), 
@@ -3320,6 +3319,13 @@
                         allowDelegate: !0,
                         default: props_defaultNoop,
                         decorate: props_decorateOnce
+                    },
+                    onResize: {
+                        type: "function",
+                        required: !1,
+                        sendToChild: !1,
+                        allowDelegate: !0,
+                        default: props_defaultNoop
                     },
                     onError: {
                         type: "function",
@@ -3533,7 +3539,7 @@
         var destroyComponents = destroyAll;
         function component_destroy() {
             var listener;
-            destroyAll(), delete window.__zoid_9_0_27__, function() {
+            destroyAll(), delete window.__zoid_9_0_28__, function() {
                 for (var responseListeners = globalStore("responseListeners"), _i2 = 0, _responseListeners$ke2 = responseListeners.keys(); _i2 < _responseListeners$ke2.length; _i2++) {
                     var hash = _responseListeners$ke2[_i2], listener = responseListeners.get(hash);
                     listener && (listener.cancelled = !0), responseListeners.del(hash);
